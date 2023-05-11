@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"gocode/project-01/utils"
 	"unsafe"
@@ -36,7 +37,6 @@ func main() {
 	// %T — type(值)
 	fmt.Println("Println：name is", name, ",sex is", sex)
 	fmt.Printf("Printf\\n：name is %s and type is %T and size is %d\n", name, name, unsafe.Sizeof(name))
-	fmt.Println("Println%s：name is %s, sex is %s", name, sex)
 	// e-2表示乘以10(-2次幂)
 	fmt.Println("科学计数法：-3.14==-314E-2", -314e-2, -3.14 == -314e-2)
 
@@ -72,6 +72,17 @@ func main() {
 	fmt.Println("函数返回值命名add2函数调用:", sum2, total2)
 
 	fmt.Println("调用其他包的函数", utils.Add(1, 2))
+	div1 := div(10, 0)
+	fmt.Println("除法调用", div1)
+
+	err := customError(10, 0)
+	if err != nil {
+		fmt.Println("自定义异常", err)
+		// 可以通过panic终端程序
+		// panic(err)
+	}
+
+	fmt.Println("执行完成")
 }
 
 func add(a int, b int, total int) (int, int) {
@@ -104,4 +115,25 @@ func test2(a func(int)) {
 
 func test3(a funcTest) {
 	a(3)
+}
+
+func div(a int, b int) (div int) {
+	defer func() {
+		//调用recover内置函数，可以捕获错误
+		err := recover()
+		// 如果没有捕获错误，返回值为零值：nil
+		if err != nil {
+			fmt.Println("div捕获到错误", err)
+		}
+	}() // 加上匿名函数的调用
+	div = a / b
+	return
+}
+
+func customError(a int, b int) (err error) {
+	if b == 0 {
+		return errors.New("除数不能为0")
+	} else {
+		return nil
+	}
 }
