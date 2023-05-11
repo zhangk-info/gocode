@@ -199,6 +199,24 @@ func main() {
 	//num5 := <-intChan
 	fmt.Println("num3=", num3, "num4=", num4 /*, "num5=", num5*/)
 
+	allChan := make(chan interface{}, 3)
+	allChan <- 10
+	allChan <- "tom jack"
+	dog := Dog{"金毛巡回犬", "金色", 12}
+	allChan <- dog
+	//我们希望获得到管道中的第三个元素，则先将前2个推出
+	<-allChan
+	<-allChan
+	newDog := <-allChan //从管道中取出的Dog是什么?
+	fmt.Printf("newDog=%T , newDog=%v\n", newDog, newDog)
+	//对于数据使用前，使用类型断言
+	newDog2, isDog := newDog.(Dog)
+	if isDog {
+		fmt.Printf("newDog2.Name=%v", newDog2.Type)
+	} else {
+		fmt.Printf("不是一个Dog类型")
+	}
+
 	fmt.Println("------------------------------------------------------------------------")
 	// 直接定义有默认值
 	var husky Dog
