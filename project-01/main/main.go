@@ -19,6 +19,7 @@ func main() {
 	// go build test.go + test.exe  = go run test.go
 	fmt.Println("hello world")
 
+	fmt.Println("------------------------------------------------------------------------")
 	// 变量
 	var age int = 1
 	fmt.Println("age is ", age)
@@ -44,6 +45,7 @@ func main() {
 	var ptr *int = &age
 	fmt.Println("ptr这个指针指向的数值为：", *ptr)
 
+	fmt.Println("------------------------------------------------------------------------")
 	sum, _ := add(1, 2, 3)
 	sum, total := add(1, 2, 3)
 	fmt.Println("add函数调用:", sum, total)
@@ -75,6 +77,7 @@ func main() {
 	div1 := div(10, 0)
 	fmt.Println("除法调用", div1)
 
+	fmt.Println("------------------------------------------------------------------------")
 	err := customError(10, 0)
 	if err != nil {
 		fmt.Println("自定义异常", err)
@@ -82,7 +85,160 @@ func main() {
 		// panic(err)
 	}
 
+	fmt.Println("------------------------------------------------------------------------")
+
+	var scores [5]int = [5]int{1, 2, 3, 4, 5}
+	fmt.Println("常规定义", scores)
+	scores2 := [...]int{1, 2}
+	fmt.Println("类型推断+长度自动计算", scores2)
+	scores3 := [...]int{1: 4, 0: 5, 6: 6}
+	fmt.Println("类型推断+长度自动计算+k,v定义", scores3)
+
+	var sum3 int
+	for i := 0; i < len(scores); i++ {
+		sum3 += scores[i]
+	}
+	fmt.Println("数组", scores, ",平均数是：", sum3/len(scores))
+	fmt.Printf("数组的指针地址是%p,类型是%T,指针类型是%T;数组第一个空间的指针地址是%p,类型是%T,指针类型是%T\n", &scores3, scores3, &scores3, &scores3[0], scores3[0], &scores3[0])
+	var ptr1 *int = &scores[0]
+	var ptr2 *[5]int = &scores
+	// 通过指针操作值（）
+	(*ptr2)[0] = 10
+	fmt.Println("从数组指针地址取值是", *ptr1, *ptr2)
+	// fmt.Println("请录入一个成绩")
+	// fmt.Scanln(&scores[1])
+	// fmt.Println("数组", scores, ",平均数是：", sum3/len(scores))
+	// key value 遍历
+	for k, v := range scores2 {
+		// 这里对于数组k是下标0开始
+		fmt.Println(k, " ", v)
+	}
+
+	// 区别：多维数组后面维度长度要指定
+	scores4 := [...][9]int{{0: 1, 6: 2}, {1: 5, 8: 9}}
+	fmt.Println("二维数据初始化", scores4)
+	fmt.Println("------------------------------------------------------------------------")
+
+	var slice []int
+	// 这里的start:end都可以忽略不写，如[2:][:5][:]
+	slice = scores[2:5]
+	// 切片容量自动扩容。容量<1024时，以2倍递增。容量超过1024时，容量变为原来的1.25倍。如果一次插入后长度大于原容量2倍时会以新长度为基准
+	// 切片扩容机制是开辟新的连续空间并拷贝原值，再插入
+	fmt.Printf("切片类型：%T\n", slice)
+	fmt.Println("原数据", scores, "切片  1:3  包前不包后", slice, "长度为", len(slice), "容量为", cap(slice))
+	// make(切片类型，长度，容量)
+	var slice2 []int = make([]int, 8, 20)
+	slice2[0] = 1
+	slice2[1] = 2
+	slice2[2] = 3
+	slice2[3] = 4
+	fmt.Printf("切片类型：%T\n", slice2)
+	fmt.Println("切片", slice2, "长度为", len(slice2), "容量为", cap(slice2))
+	// 切片类型这里[]没有...计算长度
+	slice3 := []int{1, 2}
+	slice3 = append(slice3, 1, 2)
+	slice3 = append(slice3, slice2...)
+	fmt.Printf("切片类型：%T\n", slice3)
+	fmt.Println("切片", slice3, "长度为", len(slice3), "容量为", cap(slice3))
+
+	// copy(target,source),多出的长度不会复制
+	copy(slice2, slice3)
+	fmt.Println("切片", slice2, "长度为", len(slice2), "容量为", cap(slice2))
+	fmt.Println("------------------------------------------------------------------------")
+
+	var map1 map[int]int
+	map1 = make(map[int]int, 10)
+	map1[1] = 1
+	map1[2] = 2
+	map1[1] = 3
+	fmt.Println("映射", map1)
+	// 由于动态扩容，创建时可以不指定长度
+	map2 := make(map[int]string)
+	map2[1] = "1"
+	fmt.Println("映射", map2, len(map2))
+	map3 := map[int]string{1: "1", 2: "2"}
+	fmt.Println("映射", map3, len(map3))
+	// 删除
+	delete(map1, 1)
+	fmt.Println("映射 删除", map1, len(map1))
+	// 清空，1重新初始化，2遍历删除
+	map2 = make(map[int]string)
+	fmt.Println("映射 清空", map2, len(map2))
+	// 查找
+	num6, hasNum6 := map1[6]
+	fmt.Println("映射", map1, "查找6", hasNum6, num6)
+
+	// 加深难度,map的value可以是任何值
+	map4 := map[string]map[int]string{"张": {1: "1", 2: "2"}, "王": {3: "3"}}
+	fmt.Println("映射", map4, len(map4), len(map4["王"]))
+
+	fmt.Println("------------------------------------------------------------------------")
+	// 演示一下管道的使用
+	//1. 创建一个可以存放3个int类型的管道
+	var intChan chan int
+	intChan = make(chan int, 3)
+	//2. 看看intChan是什么
+	fmt.Printf("intChan 的值=%v intChan本身的地址=%p\n", intChan, &intChan)
+	//3. 向管道写入数据
+	intChan <- 10
+	intChan <- 211
+	intChan <- 50
+	// //如果从channel取出数据后，可以继续放入
+	<-intChan
+	intChan <- 98 //注意点, 当我们给管写入数据时，不能超过其容量
+	//4. 看看管道的长度和cap(容量)
+	fmt.Printf("channel len= %v cap=%v \n", len(intChan), cap(intChan)) // 3, 3
+	//5. 从管道中读取数据
+	var num2 int
+	num2 = <-intChan
+	fmt.Println("num2=", num2)
+	fmt.Printf("channel len= %v cap=%v \n", len(intChan), cap(intChan)) // 2, 3
+	//6. 在没有使用协程的情况下，如果我们的管道数据已经全部取出，再取就会报告 deadlock
+	num3 := <-intChan
+	num4 := <-intChan
+	//num5 := <-intChan
+	fmt.Println("num3=", num3, "num4=", num4 /*, "num5=", num5*/)
+
+	fmt.Println("------------------------------------------------------------------------")
+	// 直接定义有默认值
+	var husky Dog
+	husky.Type = "哈士奇"
+	husky.Age = 45
+	husky.Color = "红色"
+	fmt.Println("哈士奇", husky)
+	// 定义并初始化
+	goldenRetriever := Dog{"金毛巡回犬", "金色", 12}
+	fmt.Println("金毛巡回犬", goldenRetriever)
+	// new的方式返回指针
+	var borderCollie *Dog = new(Dog)
+	(*borderCollie).Type = "边牧"
+	(*borderCollie).Age = 6
+	// go编译器底层对指针取值进行了推断，可以不写* ！！
+	borderCollie.Color = "银色"
+	fmt.Println("边牧", *borderCollie)
+	// &方式返回指针
+	var komaki *Dog = &Dog{"古牧", "灰色", 15}
+	komaki.Age = 16
+	var komaki2 *Dog2 = &Dog2{}
+	// Dog和Dog2一模一样所以可以强转
+	*komaki2 = (Dog2)(*komaki)
+	fmt.Println("古牧", *komaki, *komaki2)
+
 	fmt.Println("执行完成")
+}
+
+type Dog2 struct {
+	// 变量名字大写外界可以访问属性
+	Type  string
+	Color string
+	Age   int
+}
+
+type Dog struct {
+	// 变量名字大写外界可以访问属性
+	Type  string
+	Color string
+	Age   int
 }
 
 func add(a int, b int, total int) (int, int) {
