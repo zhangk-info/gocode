@@ -46,8 +46,8 @@ func main() {
 	fmt.Println("ptr这个指针指向的数值为：", *ptr)
 
 	fmt.Println("------------------------------------------------------------------------")
-	sum, _ := add(1, 2, 3)
 	sum, total := add(1, 2, 3)
+	// sum, _ := add(1, 2, 3)
 	fmt.Println("add函数调用:", sum, total)
 
 	num := 10
