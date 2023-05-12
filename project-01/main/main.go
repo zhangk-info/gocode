@@ -78,11 +78,13 @@ func main() {
 	fmt.Println("除法调用", div1)
 
 	fmt.Println("------------------------------------------------------------------------")
-	err := customError(10, 0)
+	div2, err := customError(10, 0)
 	if err != nil {
 		fmt.Println("自定义异常", err)
 		// 可以通过panic终端程序
 		// panic(err)
+	} else {
+		fmt.Println("除法调用", div2)
 	}
 
 	fmt.Println("------------------------------------------------------------------------")
@@ -141,6 +143,14 @@ func main() {
 	fmt.Printf("切片类型：%T\n", slice3)
 	fmt.Println("切片", slice3, "长度为", len(slice3), "容量为", cap(slice3))
 
+	slice4 := []int{1, 2}
+	// 原值是[1,2],方法中将0下标改成10并新增2个元素[3，4]
+	// 方法内切片 [10 2 3 4] 长度为 4 容量为 4
+	transferSlice(slice4)
+	// 最终slice4切片为[10 2] 长度为 2 容量为 2
+	// 第一个值改了但是超出部分并没有在slice4,因为append方法是开辟新的连续空间并拷贝原值，再插入
+	fmt.Println("切片传递", slice4, "长度为", len(slice4), "容量为", cap(slice4))
+
 	// copy(target,source),多出的长度不会复制
 	copy(slice2, slice3)
 	fmt.Println("切片", slice2, "长度为", len(slice2), "容量为", cap(slice2))
@@ -167,6 +177,12 @@ func main() {
 	// 查找
 	num6, hasNum6 := map1[6]
 	fmt.Println("映射", map1, "查找6", hasNum6, num6)
+
+	map5 := make(map[int]string)
+	map5[1] = "1"
+	// 映射传递后，方法内所有操作都会影响原映射
+	transferMap(map5)
+	fmt.Println("映射传递", map5, len(map5))
 
 	// 加深难度,map的value可以是任何值
 	map4 := map[string]map[int]string{"张": {1: "1", 2: "2"}, "王": {3: "3"}}
@@ -259,6 +275,18 @@ type Dog struct {
 	Age   int
 }
 
+func transferMap(map1 map[int]string) {
+	map1[1] = "2"
+	map1[2] = "2"
+}
+
+func transferSlice(slice []int) {
+	slice[0] = 10
+	slice = append(slice, 3)
+	slice = append(slice, 4)
+	fmt.Println("方法内切片", slice, "长度为", len(slice), "容量为", cap(slice))
+}
+
 func add(a int, b int, total int) (int, int) {
 	total += a + b
 	return a + b, total
@@ -304,10 +332,11 @@ func div(a int, b int) (div int) {
 	return
 }
 
-func customError(a int, b int) (err error) {
+func customError(a int, b int) (div int, err error) {
 	if b == 0 {
-		return errors.New("除数不能为0")
+		return 0, errors.New("除数不能为0")
 	} else {
-		return nil
+		div = a / b
+		return div, nil
 	}
 }
