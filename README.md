@@ -6,7 +6,10 @@
 * go bulid *.go 会生成对应go的可执行文件
 * go run *.go 直接执行go文件
 
+## set GO111MODULE = on
 
+## go mod tidy 把项目所需要的依赖添加到go.mod，并删除go.mod中没有被项目使用的依赖
+## go mod init module-name 初始化mod
 ## 数据类型
 整数类型
 

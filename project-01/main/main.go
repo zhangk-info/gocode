@@ -258,6 +258,19 @@ func main() {
 	*komaki2 = (Dog2)(*komaki)
 	fmt.Println("古牧", *komaki, *komaki2)
 
+	fmt.Println("------------------------------------------------------------------------")
+	var dog2 = Dog{"哈士奇", "黑白", 12}
+	res := dog2.bit(3) // 哈士奇汪汪汪
+	// 传递指针调用 这里可以简写，编译器可以自动处理，会自动加上&和*
+	// (&dog2).bit2(3)
+	dog2.bit2(3)
+	fmt.Println("bit方法调用", res, dog2)
+
+	fmt.Println("------------------------------------------------------------------------")
+	num7 := 1
+	transferPtr(&num7)
+	fmt.Println("指针传递", num7)
+
 	fmt.Println("执行完成")
 }
 
@@ -273,6 +286,24 @@ type Dog struct {
 	Type  string
 	Color string
 	Age   int
+}
+
+func transferPtr(a *int) {
+	*a = 10
+}
+
+func (dog Dog) bit(bitTime int) (res string) {
+	res += dog.Type
+	for i := 0; i < bitTime; i++ {
+		res += "汪"
+	}
+	return
+}
+
+func (dog *Dog) bit2(bitTime int) (res string) {
+	dog.Age = 13
+	dog.Color = "金色"
+	return
 }
 
 func transferMap(map1 map[int]string) {
