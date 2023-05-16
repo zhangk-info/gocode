@@ -147,8 +147,9 @@ func main() {
 	// 原值是[1,2],方法中将0下标改成10并新增2个元素[3，4]
 	// 方法内切片 [10 2 3 4] 长度为 4 容量为 4
 	transferSlice(slice4)
-	// 最终slice4切片为[10 2] 长度为 2 容量为 2
-	// 第一个值改了但是超出部分并没有在slice4,因为append方法是开辟新的连续空间并拷贝原值，再插入
+	// 因为append方法是开辟新的连续空间并拷贝原值，再插入
+	// 如果是先更改再append 更改会改变原数组 最终slice4切片为[10 2] 长度为 2 容量为 2
+	// 如果是先append再更改 更改不会改变原数组 最终slice4切片为[1 2] 长度为 2 容量为 2
 	fmt.Println("切片传递", slice4, "长度为", len(slice4), "容量为", cap(slice4))
 
 	// copy(target,source),多出的长度不会复制
@@ -157,6 +158,7 @@ func main() {
 	fmt.Println("------------------------------------------------------------------------")
 
 	var map1 map[int]int
+	// 映射必须初始化才能使用
 	map1 = make(map[int]int, 10)
 	map1[1] = 1
 	map1[2] = 2
@@ -312,9 +314,9 @@ func transferMap(map1 map[int]string) {
 }
 
 func transferSlice(slice []int) {
+	slice = append(slice, 3, 4, 5)
+	slice = append(slice, 6)
 	slice[0] = 10
-	slice = append(slice, 3)
-	slice = append(slice, 4)
 	fmt.Println("方法内切片", slice, "长度为", len(slice), "容量为", cap(slice))
 }
 
@@ -333,6 +335,7 @@ func add2(a int, b int, beforeTotal int) (sum int, total int) {
 // 参数类型为指针
 func change(ptr *int) {
 	// 对地址对应的变量进行赋值 *a返回指针变量a的值
+	// 对于基础数据类型这里的*省略会编译报错
 	*ptr = 30
 }
 
